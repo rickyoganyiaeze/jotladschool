@@ -1,0 +1,90 @@
+1. Homepage (index.html)
+Image Purpose
+File Path  Name
+Description (Alt Text)
+Favicon	favicon.png	Jotlad Group of Schools Logo Icon
+Logo 1 (Basic)	basicschoollogo.png	Jotlad Nursery and Basic School Logo
+Logo 2 (College)	collegeschoollogo.png	Jotlad Model College Logo
+Hero Slide 1	imageshero1.jpg	Jotlad School Campus Building and Students
+Hero Slide 2	imageshero2.jpg	Students Learning in Classroom at Jotlad
+About Section	imagesabout-preview.jpg	Happy Students at Jotlad Group of Schools
+Program (Nursery)	imagesnursery-class.jpg	Nursery Class Students Learning
+Program (Basic)	imagesbasic-class.jpg	Basic School Students in Classroom
+Program (Creche)	imagescreche-class.jpg	Creche Children Playing Safely
+Program (Jr College)	imagesjunior-college.jpg	Junior Secondary Students in Science Lab
+Program (Sr College)	imagessenior-college.jpg	Senior Secondary Students Writing Exams
+Program (Vocational)	imagesvocational.jpg	Students Learning Computer and Vocational Skills
+Gallery Item 1	imagesgallery1.jpg	Students in Classroom Learning
+Gallery Item 2	imagesgallery2.jpg	School Sports Activities
+Gallery Item 3	imagesgallery3.jpg	Science Laboratory Session
+Gallery Item 4	imagesgallery4.jpg	Graduation Ceremony
+Gallery Item 5	imagesgallery5.jpg	Cultural Day Celebration
+News Article 1	imagesnews1.jpg	Graduation Ceremony 2026
+News Article 2	imagesnews2.jpg	Inter-House Sports Competition
+News Article 3	imagesnews3.jpg	Open Day Event for Parents
+
+2. About Page (about.html)
+Image Purpose
+File Path  Name
+Description (Alt Text)
+Intro Image	imagesabout-school.jpg	Jotlad School Campus Building
+
+3. Basic School Page (basic.html)
+Image Purpose
+File Path  Name
+Description (Alt Text)
+Hero Image	imagesprimary-hero.jpg	Jotlad Nursery and Basic School Building
+Gallery 1	imagesprimary-gal1.jpg	Classroom Learning Activities
+Gallery 2	imagesprimary-gal2.jpg	Primary School Sports Day
+Gallery 3	imagesprimary-gal3.jpg	Graduation Ceremony
+Gallery 4	imagesprimary-gal4.jpg	Cultural Day Celebration
+Gallery 5	imagesprimary-gal5.jpg	Prize Giving Day
+
+4. College Page (college.html)
+Image Purpose
+File Path  Name
+Description (Alt Text)
+Hero Image	imagescollege-hero.jpg	Jotlad Model College Main Building
+Facility (Lab)	imagesscience-lab.jpg	Modern Science Laboratory
+Facility (Comp)	imagescomputer-lab.jpg	Computer Laboratory for Students
+Facility (Lib)	imagesschool-library.jpg	School Library Resources
+Gallery 1	imagescollege-gal1.jpg	Science Laboratory Practical
+Gallery 2	imagescollege-gal2.jpg	College Graduation Ceremony
+Gallery 3	imagescollege-gal3.jpg	Sports Competition
+Gallery 4	imagescollege-gal4.jpg	Awards and Prize Giving
+Gallery 5	imagescollege-gal5.jpg	Morning Assembly
+
+5. Gallery Page (gallery.html)
+Image Purpose
+File Path  Name
+Description (Alt Text)
+Academic 1	imagesgal-academic1.jpg	Classroom Learning Session
+Academic 2	imagesgal-academic2.jpg	Science Laboratory
+Academic 3	imagesgal-academic3.jpg	Library Session
+Academic 4	imagesgal-academic4.jpg	Computer Laboratory
+Sports 1	imagesgal-sports1.jpg	Inter-House Sports
+Sports 2	imagesgal-sports2.jpg	Football Match
+Sports 3	imagesgal-sports3.jpg	Athletics Day
+Sports 4	imagesgal-sports4.jpg	Sports Victory Celebration
+Events 1	imagesgal-event1.jpg	Graduation Ceremony
+Events 2	imagesgal-event2.jpg	Cultural Day
+Events 3	imagesgal-event3.jpg	Prize Giving Day
+Events 4	imagesgal-event4.jpg	Christmas Carol
+Events 5	imagesgal-event5.jpg	Open Day
+Events 6	imagesgal-event6.jpg	Award Ceremony
+Facilities 1	imagesgal-facility1.jpg	Main School Building
+Facilities 2	imagesgal-facility2.jpg	School Playground
+Facilities 3	imagesgal-facility3.jpg	Assembly Hall
+Facilities 4	imagesgal-facility4.jpg	School Transport Bus
+
+6. Admissions Page (admissions.html)
+Image Purpose
+File Path  Name
+Description (Alt Text)
+Important Date Icon	(Uses FontAwesome Icon)	NA
+
+7. Social Sharing (SEO)
+Image Purpose
+File Path  Name
+Description (Alt Text)
+FacebookWhatsApp Preview	imagesog-image.jpg	Jotlad Schools Preview Image for Social Media
