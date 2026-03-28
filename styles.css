@@ -1813,7 +1813,16 @@ img {
     text-align: center;
     width: 100%;
   }
-
+  /* Hide the address on mobile */
+  .hide-mobile {
+    display: none !important;
+  }
+  
+  /* Optional: Center the remaining items */
+  .top-bar-content {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
   /* Mobile Menu Container */
   .nav-menu {
     position: fixed;
