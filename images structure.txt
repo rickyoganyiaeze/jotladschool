@@ -11,8 +11,8 @@ About Section	imagesabout-preview.jpg	Happy Students at Jotlad Group of Schools
 Program (Nursery)	imagesnursery-class.jpg	Nursery Class Students Learning
 Program (Basic)	imagesbasic-class.jpg	Basic School Students in Classroom
 Program (Creche)	imagescreche-class.jpg	Creche Children Playing Safely
-Program (Jr College)	imagesjunior-college.jpg	Junior Secondary Students in Science Lab
-Program (Sr College)	imagessenior-college.jpg	Senior Secondary Students Writing Exams
+Program (Jr College)	imagesjunior-college.jpg	Junior College Students in Science Lab
+Program (Sr College)	imagessenior-college.jpg	Senior College Students Writing Exams
 Program (Vocational)	imagesvocational.jpg	Students Learning Computer and Vocational Skills
 Gallery Item 1	imagesgallery1.jpg	Students in Classroom Learning
 Gallery Item 2	imagesgallery2.jpg	School Sports Activities
@@ -33,12 +33,12 @@ Intro Image	imagesabout-school.jpg	Jotlad School Campus Building
 Image Purpose
 File Path  Name
 Description (Alt Text)
-Hero Image	imagesprimary-hero.jpg	Jotlad Nursery and Basic School Building
-Gallery 1	imagesprimary-gal1.jpg	Classroom Learning Activities
-Gallery 2	imagesprimary-gal2.jpg	Primary School Sports Day
-Gallery 3	imagesprimary-gal3.jpg	Graduation Ceremony
-Gallery 4	imagesprimary-gal4.jpg	Cultural Day Celebration
-Gallery 5	imagesprimary-gal5.jpg	Prize Giving Day
+Hero Image	imagesbasic-hero.jpg	Jotlad Nursery and Basic School Building
+Gallery 1	imagesbasic-gal1.jpg	Classroom Learning Activities
+Gallery 2	imagesbasic-gal2.jpg	basic School Sports Day
+Gallery 3	imagesbasic-gal3.jpg	Graduation Ceremony
+Gallery 4	imagesbasic-gal4.jpg	Cultural Day Celebration
+Gallery 5	imagesbasic-gal5.jpg	Prize Giving Day
 
 4. College Page (college.html)
 Image Purpose
