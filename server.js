@@ -24,6 +24,12 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
+// DEBUG: Check if Cloudinary keys are loaded
+console.log("Cloudinary Config Check:");
+console.log("Cloud Name:", process.env.CLOUDINARY_CLOUD_NAME ? "Found" : "❌ MISSING");
+console.log("API Key:", process.env.CLOUDINARY_API_KEY ? "Found" : "❌ MISSING");
+console.log("API Secret:", process.env.CLOUDINARY_API_SECRET ? "Found" : "❌ MISSING");
+
 // Cloudinary Storage for PDFs (Fixed for correct filenames)
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
