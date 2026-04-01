@@ -27,10 +27,14 @@ cloudinary.config({
 // Cloudinary Storage for PDFs
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: {
-    folder: 'jotlad-results',
-    allowed_formats: ['pdf'],
-    resource_type: 'raw'
+  params: async (req, file) => {
+    return {
+      folder: 'jotlad-results',
+      allowed_formats: ['pdf'],
+      resource_type: 'raw',
+      // This forces the file to keep its original name with .pdf at the end
+      public_id: file.originalname.replace(/\.pdf$/i, "") 
+    };
   }
 });
 
