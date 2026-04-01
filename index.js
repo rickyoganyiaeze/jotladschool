@@ -1,50 +1,38 @@
-require('dotenv').config(); // 1. Load secret variables from .env file
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 
 const app = express();
+// Render sets the PORT environment variable
 const PORT = process.env.PORT || 3000;
 
-// 2. Define what an "Admin" item looks like
+// Define Schema
 const AdminLogSchema = new mongoose.Schema({
   action: String,
   timestamp: { type: Date, default: Date.now }
 });
-
-// Create the model (This will create a collection called 'adminlogs' in your 'admin' DB)
 const AdminLog = mongoose.model('AdminLog', AdminLogSchema);
 
-async function startServer() {
-  try {
-    // 3. Connect to MongoDB
-    // We use the MONGO_URI from the .env file
-    console.log("⏳ Connecting to MongoDB 'admin' database...");
-    
-    await mongoose.connect(process.env.MONGO_URI);
-    
+// Connect to Mongo and THEN start the server
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => {
     console.log("✅ CONNECTED successfully to the Admin Database!");
 
-    // --- ROUTES (Your "Admin Page" tests) ---
-
-    // Route 1: Home page
+    // ROUTES
     app.get('/', (req, res) => {
       res.send('<h1>Admin Server is Running!</h1><p>Try going to <a href="/test-add">/test-add</a></p>');
     });
 
-    // Route 2: Add a test entry to the admin database
     app.get('/test-add', async (req, res) => {
       try {
-        const newLog = new AdminLog({
-          action: "Test login attempt"
-        });
+        const newLog = new AdminLog({ action: "Test from Render" });
         await newLog.save();
-        res.send("✅ Success! Added a test document to the 'admin' database.");
+        res.send("✅ Added a test document to the 'admin' database on Render!");
       } catch (err) {
         res.status(500).send("Error writing to DB: " + err.message);
       }
     });
 
-    // Route 3: View all entries in the admin database
     app.get('/test-view', async (req, res) => {
       try {
         const logs = await AdminLog.find();
@@ -54,16 +42,13 @@ async function startServer() {
       }
     });
 
-    // Start the server
+    // START LISTENING
     app.listen(PORT, () => {
-      console.log(`🚀 Server listening at http://localhost:${PORT}`);
+      console.log(`🚀 Server listening on port ${PORT}`);
     });
 
-  } catch (error) {
-    // This handles the ECONNREFUSED error
-    console.error("❌ Connection Failed!");
-    console.error(error);
-  }
-}
-
-startServer();
+  })
+  .catch(err => {
+    console.error("❌ Connection Failed:", err);
+    process.exit(1); // Stop the app if DB fails
+  });
