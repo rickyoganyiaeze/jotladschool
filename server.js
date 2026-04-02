@@ -286,6 +286,13 @@ app.get('/api/admin/results/:id', authMiddleware, async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
+// Ping the app every 5 minutes to prevent sleeping
+setInterval(() => {
+  http.get(`http://localhost:${PORT}`, (res) => {
+    console.log('Keeping awake...');
+  });
+}, 300000); // 5 minutes
+//
 
 // Serve HTML Pages
 app.get('/result-checker', (req, res) => res.sendFile(path.join(__dirname, 'public', 'result-checker.html')));
@@ -293,9 +300,13 @@ app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'adm
 app.get('/admin/dashboard', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin-dashboard.html')));
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+// Change app.listen to server.listen:
+server.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
 
-// Keep the process alive explicitly
-setInterval(() => {
-  // This dummy interval prevents Railway from sleeping the process unexpectedly
-}, 1000 * 60 * 5); 
+// --- ADD THIS TO KEEP AWAKE ---
+const http = require('http');
+const server = http.createServer(app);
+
+
