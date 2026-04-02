@@ -300,13 +300,6 @@ app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'adm
 app.get('/admin/dashboard', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin-dashboard.html')));
 
 const PORT = process.env.PORT || 3000;
-// Change app.listen to server.listen:
-server.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
-
-// --- ADD THIS TO KEEP AWAKE ---
-const http = require('http');
-const server = http.createServer(app);
-
-
