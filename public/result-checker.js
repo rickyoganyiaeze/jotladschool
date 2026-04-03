@@ -32,7 +32,7 @@ function goToStep(stepNum) {
   [step1Indicator, step2Indicator, step3Indicator].forEach(ind => {
     ind.classList.remove('active', 'completed');
   });
-  
+
   // Show requested step
   if (stepNum === 1) {
     step1.classList.add('active');
@@ -52,53 +52,53 @@ function goToStep(stepNum) {
 // Step 1: Check Admission Number
 admissionForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  
+
   const input = document.getElementById('admissionNumber');
   admissionNumber = input.value.trim().toUpperCase();
-  
+
   if (!admissionNumber) {
     alert('Please enter your admission number');
     return;
   }
-  
+
   // Show loading
   const btn = admissionForm.querySelector('button[type="submit"]');
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
-  
+
   try {
     const response = await fetch(`${API_URL}/check-admission`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ admissionNumber })
     });
-    
+
     const data = await response.json();
-    
+
     if (data.success) {
       studentName = data.studentName;
       studentNameDisplay.textContent = `Student: ${studentName} (${admissionNumber})`;
-      
+
       // Populate dropdowns
       const classes = [...new Set(data.results.map(r => r.class))];
       const terms = [...new Set(data.results.map(r => r.term))];
       const years = [...new Set(data.results.map(r => r.year))];
-      
+
       selectClass.innerHTML = '<option value="">Select Class</option>';
       classes.forEach(c => {
         selectClass.innerHTML += `<option value="${c}">${c}</option>`;
       });
-      
+
       selectTerm.innerHTML = '<option value="">Select Term</option>';
       terms.forEach(t => {
         selectTerm.innerHTML += `<option value="${t}">${t}</option>`;
       });
-      
+
       selectYear.innerHTML = '<option value="">Select Year</option>';
       years.forEach(y => {
         selectYear.innerHTML += `<option value="${y}">${y}</option>`;
       });
-      
+
       goToStep(2);
     } else {
       alert(data.message || 'Invalid Admission Number');
@@ -119,23 +119,23 @@ document.getElementById('backBtn').addEventListener('click', () => {
 // Step 2: Get Result
 detailsForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  
+
   const classVal = selectClass.value;
   const termVal = selectTerm.value;
   const yearVal = selectYear.value;
-  
+
   if (!classVal || !termVal || !yearVal) {
     alert('Please select all fields');
     return;
   }
-  
+
   // Show loading
   loadingSpinner.style.display = 'block';
   pdfContainer.style.display = 'none';
   errorMessage.style.display = 'none';
   resultActions.style.display = 'none';
   goToStep(3);
-  
+
   try {
     const response = await fetch(`${API_URL}/get-result`, {
       method: 'POST',
@@ -147,35 +147,44 @@ detailsForm.addEventListener('submit', async (e) => {
         year: yearVal
       })
     });
-    
+
     const data = await response.json();
-    
+
     if (data.success) {
       const result = data.result;
+
+      // --- UPDATED SECTION FOR DATABASE STORAGE ---
       
-      // Show PDF
+      // Show PDF from Database Data
       loadingSpinner.style.display = 'none';
-      pdfViewer.src = result.pdfUrl;
+      
+      // We create a "Data URL" from the base64 string sent by the server
+      pdfViewer.src = `data:application/pdf;base64,${result.pdfData}`;
+      
       pdfContainer.style.display = 'block';
       resultActions.style.display = 'flex';
-      
+
       resultInfo.textContent = `${result.studentName} | ${result.class} | ${result.term} | ${result.year}`;
-      
-      // Download button
+
+      // Download Button (Updated)
       document.getElementById('downloadBtn').onclick = () => {
-        const a = document.createElement('a');
-        a.href = result.pdfUrl;
-        a.download = `${result.admissionNumber}_${result.class}_${result.term}_${result.year}.pdf`;
-        a.click();
+        const link = document.createElement('a');
+        link.href = `data:application/pdf;base64,${result.pdfData}`;
+        link.download = `${result.admissionNumber}_${result.class}_${result.term}_${result.year}.pdf`;
+        link.click();
       };
-      
-      // Print button
+
+      // Print Button (Updated)
       document.getElementById('printBtn').onclick = () => {
-        const printWindow = window.open(result.pdfUrl, '_blank');
-        printWindow.onload = () => {
-          printWindow.print();
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`<iframe width='100%' height='100%' src='data:application/pdf;base64,${result.pdfData}'></iframe>`);
+        printWindow.onload = () => { 
+            printWindow.print(); 
         };
       };
+      
+      // ------------------------------------------
+
     } else {
       loadingSpinner.style.display = 'none';
       errorMessage.querySelector('p').textContent = data.message;

@@ -1,57 +1,19 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const multer = require('multer'); // We only need multer now
+const multer = require('multer'); // We still use multer to catch the file, but we won't save it to disk
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const path = require('path');
-const fs = require('fs'); // Needed to check/delete files
 require('dotenv').config();
 
 const app = express();
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' })); // Increase limit for base64 data
 app.use(express.static(path.join(__dirname, 'public')));
-
-// Ensure 'uploads' directory exists
-const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)){
-    fs.mkdirSync(uploadDir);
-}
-
-// Serve uploaded files statically
-// This makes files available at http://your-domain/uploads/filename.pdf
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
-
-// ============ NEW STORAGE CONFIGURATION ============
-// Saves files locally as "ADMISSION_NUMBER.pdf"
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir); // Save to 'uploads' folder
-  },
-  filename: function (req, file, cb) {
-    // Use admission number as filename so it's easy to find/overwrite
-    const admissionNumber = req.body.admissionNumber ? req.body.admissionNumber.toUpperCase() : 'UNKNOWN';
-    cb(null, `${admissionNumber}-${Date.now()}${path.extname(file.originalname)}`);
-  }
-});
-
-const fileFilter = (req, file, cb) => {
-  if (file.mimetype === 'application/pdf') {
-    cb(null, true);
-  } else {
-    cb(new Error('Only PDF files are allowed!'), false);
-  }
-};
-
-const upload = multer({ 
-  storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // Limit 10MB
-  fileFilter: fileFilter
-});
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
@@ -59,14 +21,15 @@ mongoose.connect(process.env.MONGO_URI)
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
 // Result Schema
-// Removed publicId, kept pdfUrl but it will now store the relative path like "/uploads/file.pdf"
+// CHANGED: Added pdfData field to store the actual file content
 const resultSchema = new mongoose.Schema({
   admissionNumber: { type: String, required: true, uppercase: true },
   studentName: { type: String, required: true },
   class: { type: String, required: true },
   term: { type: String, required: true },
   year: { type: String, required: true },
-  pdfUrl: { type: String, required: true }, // Will now store /uploads/filename.pdf
+  // NEW: This stores the PDF file as data
+  pdfData: { type: String, required: true }, 
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -86,14 +49,25 @@ const JWT_SECRET = process.env.JWT_SECRET || 'jotlad-schools-secret-key-2024';
 // Auth Middleware
 const authMiddleware = (req, res, next) => {
   const token = req.header('Authorization')?.replace('Bearer ', '');
-  if (!token) return res.status(401).json({ message: 'Access denied. No token provided.' });
+  if (!token) return res.status(401).json({ message: 'Access denied.' });
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.admin = decoded;
+    req.admin = jwt.verify(token, JWT_SECRET);
     next();
   } catch (error) {
     res.status(400).json({ message: 'Invalid token.' });
   }
+};
+
+// Configure Multer to use Memory Storage (stores file in RAM temporarily)
+const storage = multer.memoryStorage();
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
+});
+
+// Helper function to convert buffer to base64 string
+const bufferToBase64 = (buffer) => {
+  return buffer.toString('base64');
 };
 
 // ============ PUBLIC ROUTES ============
@@ -102,48 +76,33 @@ app.post('/api/check-admission', async (req, res) => {
   try {
     const { admissionNumber } = req.body;
     const results = await Result.find({ admissionNumber: admissionNumber.toUpperCase() }).select('class term year studentName');
-    
     if (results.length === 0) return res.status(404).json({ success: false, message: 'Invalid Admission Number' });
-    
-    res.json({ success: true, studentName: results[0].studentName, results: results });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
+    res.json({ success: true, studentName: results[0].studentName, results });
+  } catch (error) { res.status(500).json({ success: false }); }
 });
 
 app.post('/api/student-options', async (req, res) => {
   try {
     const { admissionNumber } = req.body;
     const results = await Result.find({ admissionNumber: admissionNumber.toUpperCase() }).select('class term year');
-    const classes = [...new Set(results.map(r => r.class))];
-    const terms = [...new Set(results.map(r => r.term))];
-    const years = [...new Set(results.map(r => r.year))];
-    res.json({ success: true, classes, terms, years });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
+    res.json({ success: true, classes: [...new Set(results.map(r => r.class))], terms: [...new Set(results.map(r => r.term))], years: [...new Set(results.map(r => r.year))] });
+  } catch (error) { res.status(500).json({ success: false }); }
 });
 
-// Get specific result - Returns the direct link to the PDF on your server
+// Get specific result - Returns Base64 Data
 app.post('/api/get-result', async (req, res) => {
   try {
     const { admissionNumber, class: studentClass, term, year } = req.body;
-    
     const result = await Result.findOne({
       admissionNumber: admissionNumber.toUpperCase(),
-      class: studentClass,
-      term: term,
-      year: year
+      class: studentClass, term, year
     });
     
     if (!result) return res.status(404).json({ success: false, message: 'Result not found' });
-    
-    // The pdfUrl now contains something like "/uploads/12345-1234.pdf"
-    // This is a valid link because we set up static serving above
+
+    // Return the object. Frontend will handle displaying the base64 string.
     res.json({ success: true, result });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
+  } catch (error) { res.status(500).json({ success: false }); }
 });
 
 // ============ ADMIN ROUTES ============
@@ -152,54 +111,36 @@ app.post('/api/admin/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     const admin = await Admin.findOne({ username });
-    if (!admin) return res.status(400).json({ message: 'Invalid username or password' });
-    
-    const validPassword = await bcrypt.compare(password, admin.password);
-    if (!validPassword) return res.status(400).json({ message: 'Invalid username or password' });
-    
-    const token = jwt.sign({ id: admin._id, username: admin.username }, JWT_SECRET, { expiresIn: '24h' });
+    if (!admin || !(await bcrypt.compare(password, admin.password))) return res.status(400).json({ message: 'Invalid credentials' });
+    const token = jwt.sign({ id: admin._id }, JWT_SECRET, { expiresIn: '24h' });
     res.json({ success: true, token, username: admin.username });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
+  } catch (error) { res.status(500).json({ success: false }); }
 });
 
 app.post('/api/admin/create', async (req, res) => {
   try {
     const { username, password } = req.body;
-    const existingAdmin = await Admin.findOne({ username });
-    if (existingAdmin) return res.status(400).json({ message: 'Admin already exists' });
-    
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const admin = new Admin({ username, password: hashedPassword });
+    if (await Admin.findOne({ username })) return res.status(400).json({ message: 'Admin exists' });
+    const admin = new Admin({ username, password: await bcrypt.hash(password, 10) });
     await admin.save();
-    res.json({ success: true, message: 'Admin created successfully' });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
+    res.json({ success: true });
+  } catch (error) { res.status(500).json({ success: false }); }
 });
 
 app.get('/api/admin/results', authMiddleware, async (req, res) => {
-  try {
-    const results = await Result.find().sort({ createdAt: -1 });
-    res.json({ success: true, results });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
+  const results = await Result.find().sort({ createdAt: -1 });
+  res.json({ success: true, results });
 });
 
-// UPLOAD RESULT (Fixed for Local Storage)
+// UPLOAD RESULT (Saves to Database)
 app.post('/api/admin/upload', authMiddleware, upload.single('pdf'), async (req, res) => {
   try {
     const { admissionNumber, studentName, class: studentClass, term, year } = req.body;
     
-    if (!req.file) {
-      return res.status(400).json({ message: 'PDF file is required' });
-    }
+    if (!req.file) return res.status(400).json({ message: 'PDF file is required' });
 
-    // Construct the URL that the frontend will use to view/download
-    // Since we serve uploads statically as '/uploads', the url is just /uploads/filename
-    const pdfUrl = '/uploads/' + req.file.filename;
+    // Convert file buffer to Base64 string for DB storage
+    const pdfBase64 = bufferToBase64(req.file.buffer);
 
     const result = new Result({
       admissionNumber: admissionNumber.toUpperCase(),
@@ -207,110 +148,58 @@ app.post('/api/admin/upload', authMiddleware, upload.single('pdf'), async (req, 
       class: studentClass,
       term,
       year,
-      pdfUrl: pdfUrl // Saving the local path
+      pdfData: pdfBase64 // Save the data here
     });
     
     await result.save();
-    res.json({ success: true, message: 'Result uploaded successfully', result });
+    res.json({ success: true, message: 'Result uploaded successfully!' });
   } catch (error) {
-    // If DB save fails, delete the uploaded file to clean up
-    if (req.file) fs.unlinkSync(req.file.path);
-    
-    if (error.code === 11000) {
-      return res.status(400).json({ message: 'Result already exists for this student/class/term/year' });
-    }
-    res.status(500).json({ success: false, message: 'Server error', error: error.message });
+    if (error.code === 11000) return res.status(400).json({ message: 'Result already exists.' });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
-// UPDATE RESULT (Fixed for Local Storage)
+// UPDATE RESULT
 app.put('/api/admin/results/:id', authMiddleware, upload.single('pdf'), async (req, res) => {
   try {
     const { id } = req.params;
     const { admissionNumber, studentName, class: studentClass, term, year } = req.body;
     
     const result = await Result.findById(id);
-    if (!result) return res.status(404).json({ message: 'Result not found' });
+    if (!result) return res.status(404).json({ message: 'Not found' });
     
-    // If new PDF uploaded, delete old one from disk
+    // If new file uploaded, replace data
     if (req.file) {
-      const oldFilePath = path.join(__dirname, result.pdfUrl); // Convert URL to file path
-      if (fs.existsSync(oldFilePath)) {
-        fs.unlinkSync(oldFilePath);
-      }
-      result.pdfUrl = '/uploads/' + req.file.filename;
+      result.pdfData = bufferToBase64(req.file.buffer);
     }
-    
+
     result.admissionNumber = admissionNumber.toUpperCase();
     result.studentName = studentName;
-    result.class = studentClass;
-    result.term = term;
-    result.year = year;
+    result.class = studentClass; result.term = term; result.year = year;
     
     await result.save();
-    res.json({ success: true, message: 'Result updated successfully', result });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
+    res.json({ success: true, message: 'Updated' });
+  } catch (error) { res.status(500).json({ success: false }); }
 });
 
-// DELETE RESULT (Fixed for Local Storage)
+// DELETE RESULT
 app.delete('/api/admin/results/:id', authMiddleware, async (req, res) => {
   try {
-    const { id } = req.params;
-    const result = await Result.findById(id);
-    
-    if (!result) return res.status(404).json({ message: 'Result not found' });
-    
-    // Delete file from server disk
-    const filePath = path.join(__dirname, result.pdfUrl);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-    }
-    
-    // Delete from database
-    await Result.findByIdAndDelete(id);
-    
-    res.json({ success: true, message: 'Result deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
+    await Result.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'Deleted' });
+  } catch (error) { res.status(500).json({ success: false }); }
 });
 
 app.get('/api/admin/results/:id', authMiddleware, async (req, res) => {
-  try {
-    const result = await Result.findById(req.params.id);
-    if (!result) return res.status(404).json({ message: 'Result not found' });
-    res.json({ success: true, result });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
-});
-// Ping the app every 5 minutes to prevent sleeping
-setInterval(() => {
-  http.get(`http://localhost:${PORT}`, (res) => {
-    console.log('Keeping awake...');
-  });
-}, 300000); // 5 minutes
-//
-
-// Serve static HTML pages
-app.get('/result-checker', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'result-checker.html'));
+  const result = await Result.findById(req.params.id);
+  if (!result) return res.status(404).json({ message: 'Not found' });
+  res.json({ success: true, result });
 });
 
-app.get('/admin', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
-});
+// Serve HTML
+app.get('/result-checker', (req, res) => res.sendFile(path.join(__dirname, 'public', 'result-checker.html')));
+app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
+app.get('/admin/dashboard', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin-dashboard.html')));
 
-app.get('/admin/dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'admin-dashboard.html'));
-});
-
-// ============ FIX 2: Proper Server Start ============
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
-
-
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
