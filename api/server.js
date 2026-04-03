@@ -5,5 +5,4 @@ app.get('/hello', (req, res) => {
   res.json({ message: 'It Works!' });
 });
 
-// THIS LINE IS DIFFERENT:
-export default app;
+module.exports = app;
