@@ -15,11 +15,11 @@ app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 // --- DB CONNECTION ---
 const MONGO_URI = process.env.MONGO_URI;
 if (!MONGO_URI) {
-    console.error("ERROR: MONGO_URI is missing in Environment Variables!");
+    console.error("ERROR: MONGO_URI is missing!");
 }
 mongoose.connect(MONGO_URI || '')
   .then(() => console.log('✅ DB Connected'))
-  .catch(err => console.error('❌ DB Connection Error:', err));
+  .catch(err => console.error('❌ DB Error:', err));
 
 // --- SCHEMAS ---
 const ResultSchema = new mongoose.Schema({
@@ -52,6 +52,24 @@ const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 
 // Test
 app.get('/hello', (req, res) => res.json({ msg: 'Active' }));
 
+// --- SECRET: CREATE ADMIN ROUTE ---
+app.get('/setup-admin', async (req, res) => {
+  try {
+    const existing = await Admin.findOne({ username: 'admin' });
+    if (existing) {
+      return res.json({ message: 'Admin already exists. Username: admin, Password: password123' });
+    }
+    
+    const hash = await bcrypt.hash('password123', 10);
+    const admin = new Admin({ username: 'admin', password: hash });
+    await admin.save();
+    
+    res.status(201).json({ message: 'Admin Created! Username: admin, Password: password123' });
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // Check Admission
 app.post('/check-admission', async (req, res) => {
   try {
@@ -71,7 +89,6 @@ app.post('/get-result', async (req, res) => {
 // Admin Login
 app.post('/admin/login', async (req, res) => {
   try {
-    // Basic check for body existence
     if(!req.body.username || !req.body.password) return res.status(400).send('Missing credentials');
 
     const a = await Admin.findOne({ username: req.body.username });
