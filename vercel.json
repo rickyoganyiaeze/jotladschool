@@ -1,9 +1,14 @@
 {
   "version": 2,
+  "name": "joladschool",
   "builds": [
-    { 
-      "src": "api/index.js", 
-      "use": "@vercel/node" 
+    {
+      "src": "api/index.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -12,16 +17,18 @@
       "dest": "/api/index.js"
     },
     {
-      "src": "/(.*\\.(css|js|png|jpg|svg|ico))",
-      "dest": "/public/$1"
+      "src": "/(css|js|images|uploads)/(.*\\.(.*))",
+      "dest": "/public/$1/$2"
     },
     {
       "src": "/admin",
-      "dest": "/public/admin.html"
+      "dest": "/public/admin.html",
+      "headers": { "Content-Type": "text/html" }
     },
     {
       "src": "/result-checker",
-      "dest": "/public/result-checker.html"
+      "dest": "/public/result-checker.html",
+      "headers": { "Content-Type": "text/html" }
     },
     {
       "src": "/",
