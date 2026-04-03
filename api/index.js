@@ -72,17 +72,35 @@ app.post('/get-result', async (req, res) => {
   } catch(e) { res.status(500).json({success:false}); }
 });
 
-// 4. Admin Login
+// 4. Admin Login (DEBUG MODE)
 app.post('/admin/login', async (req, res) => {
-  await connectDB();
+  // Force connection check
+  if (mongoose.connection.readyState !== 1) {
+     return res.status(500).json({ message: 'Database not connected' });
+  }
+  
   try {
+    console.log("Login attempt for:", req.body.username); // Log username
     const a = await Admin.findOne({ username: req.body.username });
-    if (!a || !(await bcrypt.compare(req.body.password, a.password))) return res.status(400).json({ message: 'Invalid creds' });
+    
+    if (!a) {
+       console.log("User not found");
+       return res.status(400).json({ message: 'User not found' }); // Be specific
+    }
+
+    const valid = await bcrypt.compare(req.body.password, a.password);
+    if (!valid) {
+       console.log("Wrong password");
+       return res.status(400).json({ message: 'Wrong password' });
+    }
+
     const token = jwt.sign({ id: a._id }, JWT_SECRET, { expiresIn: '24h' });
+    console.log("Success!");
     res.json({ success: true, token, username: a.username });
+
   } catch(e) { 
-    console.error(e); // Log error to Vercel dashboard to debug
-    res.status(500).json({ success: false, message: 'Server error' }); 
+    console.error("LOGIN ERROR:", e); // Log the actual error
+    res.status(500).json({ success: false, message: e.message }); 
   }
 });
 
