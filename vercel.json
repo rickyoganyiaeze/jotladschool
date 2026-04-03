@@ -1,14 +1,31 @@
 {
   "version": 2,
+  "builds": [
+    { 
+      "src": "api.js", 
+      "use": "@vercel/node" 
+    }
+  ],
   "routes": [
-    { "handle": "filesystem" },
     {
       "src": "/api/(.*)",
-      "dest": "/api/index.js"
+      "dest": "/api.js"
     },
     {
-      "src": "/(.*)",
+      "src": "/(.*\\.(css|js|png|jpg|svg|ico))",
       "dest": "/public/$1"
+    },
+    {
+      "src": "/admin",
+      "dest": "/public/admin.html"
+    },
+    {
+      "src": "/result-checker",
+      "dest": "/public/result-checker.html"
+    },
+    {
+      "src": "/",
+      "dest": "/public/index.html"
     }
   ]
 }
