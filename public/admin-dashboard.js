@@ -1,5 +1,5 @@
 // Admin Dashboard Logic
-const API_URL = '/api';
+const API_URL = '';
 
 // Check authentication
 const token = localStorage.getItem('adminToken');
