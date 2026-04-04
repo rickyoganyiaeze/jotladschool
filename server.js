@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(express.static('public'));
 app.use('/uploads', express.static('uploads'));
 
-// MongoDB Connection (FIXED)
+// MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB Atlas Connected Successfully'))
   .catch(err => {
@@ -134,6 +134,29 @@ app.get('/api/admin/results', adminAuth, async (req, res) => {
   }
 });
 
+// Update Result (Admin) - UPDATED TO HANDLE DATES
+app.put('/api/admin/results/:id', adminAuth, async (req, res) => {
+  try {
+    const { admissionNumber, studentName, studentClass, start, end } = req.body;
+    
+    const updatedResult = await Result.findByIdAndUpdate(
+      req.params.id, 
+      { 
+        admissionNumber, 
+        studentName, 
+        studentClass, 
+        availabilityStart: start, 
+        availabilityEnd: end 
+      },
+      { new: true }
+    );
+
+    res.json({ success: true, message: 'Result updated', data: updatedResult });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // Delete Result (Admin)
 app.delete('/api/admin/results/:id', adminAuth, async (req, res) => {
   try {
@@ -143,22 +166,7 @@ app.delete('/api/admin/results/:id', adminAuth, async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 });
-// Update Result (Admin) - NEW
-app.put('/api/admin/results/:id', adminAuth, async (req, res) => {
-  try {
-    const updatedResult = await Result.findByIdAndUpdate(
-      req.params.id, 
-      { 
-        studentName: req.body.studentName, 
-        studentClass: req.body.studentClass 
-      },
-      { new: true }
-    );
-    res.json({ success: true, data: updatedResult });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
+
 // Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
