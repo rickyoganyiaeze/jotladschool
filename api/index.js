@@ -54,13 +54,15 @@ const authMiddleware = async (req, res, next) => {
 };
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
-// --- ROUTES ---
+// --- API ROUTER (THE FIX) ---
+// This catches requests to /api/... and routes them correctly
+const apiRouter = express.Router();
 
 // Test
-app.get('/hello', (req, res) => res.json({ msg: 'Active' }));
+apiRouter.get('/hello', (req, res) => res.json({ msg: 'Active' }));
 
 // Setup Admin
-app.get('/setup-admin', async (req, res) => {
+apiRouter.get('/setup-admin', async (req, res) => {
   try {
     const existing = await Admin.findOne({ username: 'admin' });
     if (existing) return res.json({ message: 'Admin exists. User: admin, Pass: password123' });
@@ -72,7 +74,7 @@ app.get('/setup-admin', async (req, res) => {
 });
 
 // Check Admission
-app.post('/check-admission', async (req, res) => {
+apiRouter.post('/check-admission', async (req, res) => {
   try {
     const r = await Result.find({ admissionNumber: req.body.admissionNumber?.toUpperCase() }).select('class term year studentName');
     res.json(r.length ? { success: true, studentName: r[0].studentName, results: r } : { success: false, message: 'Invalid' });
@@ -80,7 +82,7 @@ app.post('/check-admission', async (req, res) => {
 });
 
 // Get Result
-app.post('/get-result', async (req, res) => {
+apiRouter.post('/get-result', async (req, res) => {
   try {
     const r = await Result.findOne({ admissionNumber: req.body.admissionNumber?.toUpperCase(), class: req.body.class, term: req.body.term, year: req.body.year });
     res.json(r ? { success: true, result: r } : { success: false, message: 'Not found' });
@@ -88,36 +90,33 @@ app.post('/get-result', async (req, res) => {
 });
 
 // ADMIN LOGIN
-app.post('/admin/login', async (req, res) => {
-  console.log("LOGIN HIT!"); // Log 1
+apiRouter.post('/admin/login', async (req, res) => {
+  console.log("LOGIN HIT!"); 
 
-  // 1. Check Body
   if(!req.body) return res.status(400).send('No body');
-  console.log("Body exists"); // Log 2
-
+  
   const { username, password } = req.body;
   
-  // 2. Find User
+  // Find User
   const user = await Admin.findOne({ username });
   if (!user) {
-      console.log("User not found"); // Log 3
+      console.log("User not found"); 
       return res.status(404).json({ message: 'User not found' });
   }
   
-  // 3. Check Password
+  // Check Password
   if (user.password !== password) {
-      console.log("Wrong password"); // Log 4
+      console.log("Wrong password"); 
       return res.status(401).json({ message: 'Invalid credentials' });
   }
 
-  // 4. Success
-  console.log("Success!"); // Log 5
+  console.log("Success!"); 
   const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '24h' });
   res.json({ success: true, token, username: user.username });
 });
 
 // Upload
-app.post('/admin/upload', authMiddleware, upload.single('pdf'), async (req, res) => {
+apiRouter.post('/admin/upload', authMiddleware, upload.single('pdf'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).send('PDF required');
     const result = new Result({
@@ -135,18 +134,18 @@ app.post('/admin/upload', authMiddleware, upload.single('pdf'), async (req, res)
 });
 
 // Get All Results
-app.get('/admin/results', authMiddleware, async (req, res) => {
+apiRouter.get('/admin/results', authMiddleware, async (req, res) => {
   res.json({ success: true, results: await Result.find().sort({createdAt:-1}) });
 });
 
 // Delete
-app.delete('/admin/results/:id', authMiddleware, async (req, res) => {
+apiRouter.delete('/admin/results/:id', authMiddleware, async (req, res) => {
   await Result.findByIdAndDelete(req.params.id);
   res.json({ success: true });
 });
 
 // Update
-app.put('/admin/results/:id', authMiddleware, upload.single('pdf'), async (req, res) => {
+apiRouter.put('/admin/results/:id', authMiddleware, upload.single('pdf'), async (req, res) => {
   try {
     const result = await Result.findById(req.params.id);
     if(!result) return res.status(404).send('Not found');
@@ -159,6 +158,10 @@ app.put('/admin/results/:id', authMiddleware, upload.single('pdf'), async (req, 
     res.json({ success: true });
   } catch(e) { res.status(500).json({success:false}); }
  });
+
+// MOUNT THE ROUTER
+// This line tells Express: "Any request coming to /api, use these rules"
+app.use('/api', apiRouter);
 
 // EXPORT
 module.exports = app;
