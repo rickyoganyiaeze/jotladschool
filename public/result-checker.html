@@ -5,18 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Check Result | jolad Group of Schools</title>
-    <base href="/">
+    <!-- REMOVED <base href="/"> TO FIX LINKS -->
     <meta name="description" content="Check your academic results at jolad Group of Schools.">
-    <link rel="icon" type="image/png" href="images/favicon.jpeg">
+    <link rel="icon" type="image/png" href="images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Poppins:wght@500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
     <style>
-        /* Custom styles specific to this page */
         .result-card {
             background: var(--white);
             border-radius: var(--border-radius-lg);
@@ -25,108 +22,89 @@
             max-width: 600px;
             margin: 0 auto;
         }
-
-        .step-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .step-header h3 {
-            color: var(--Primary-blue);
-            margin-bottom: 0.5rem;
-        }
-
-        .result-viewer {
-            width: 100%;
-            height: 600px;
-            border: 2px solid var(--light-gray);
-            border-radius: var(--border-radius);
-            margin-top: 1rem;
-        }
-
-        .result-image {
-            width: 100%;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-sm);
-            margin-top: 1rem;
-        }
-
-        .btn-block {
-            width: 100%;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .mt-3 {
-            margin-top: 1.5rem;
-        }
+        .step-header { text-align: center; margin-bottom: 2rem; }
+        .step-header h3 { color: var(--Primary-blue); margin-bottom: 0.5rem; }
+        .btn-block { width: 100%; }
+        .text-center { text-align: center; }
+        .mt-3 { margin-top: 1.5rem; }
+        .success-icon { font-size: 4rem; color: #28a745; margin-bottom: 1rem; }
     </style>
 </head>
 
 <body>
     <!-- Top Bar -->
-    <div class="top-bar">
-        <div class="container top-bar-content">
-            <div class="top-bar-item">
-                <i class="fas fa-phone"></i>
-                <span><b>Phone: </b>+234 813 738 4501 | +234 815 074 3939</span>
-            </div>
-            <div class="top-bar-item">
-                <i class="fas fa-envelope"></i>
-                <a href="mailto:joladschools@yahoo.com"><b>Email:</b> joladschools@yahoo.com</a>
-            </div>
-            <div class="top-bar-item hide-mobile">
-                <i class="fas fa-map-marker-alt"></i>
-                <span><b>Location:</b> Kelani Avenue, Irebami Estate, Ota, Ogun State</span>
-            </div>
-        </div>
+  <div class="top-bar">
+    <div class="container top-bar-content">
+      <div class="top-bar-item">
+        <i class="fas fa-phone"></i>
+        <span><b>Phone: </b>+234 813 738 4501 | +234 815 074 3939 | +234 705 661 4522 | +234 703 426 4173</span>
+      </div>
+      <div class="top-bar-item ">
+        <i class="fas fa-envelope"></i>
+        <a href="mailto:joladschools@yahoo.com"><b>Email:</b> joladschools@yahoo.com</a>
+      </div>
+      <div class="top-bar-item hide-mobile">
+        <i class="fas fa-map-marker-alt"></i>
+        <span><b>Primary:</b> 2/4, <b>College: </b>19/21 Kelani avenue, Irebami Estate, Aparadija, Lafenwa, Itele. Ota,
+          Ogun state.</span>
+      </div>
     </div>
+  </div>
 
-    <!-- Navigation -->
-    <header class="navbar" role="banner">
-        <div class="container navbar-content">
-            <div class="logo-container">
-                <a href="index.html" class="logo">
-                    <img src="images/Primarychoollogo.png" alt="jolad Logo" class="logo-img">
-                    <div class="logo-text">
-                        <span>jolad Group of Schools</span>
-                        <span>Christ Our Cornerstone</span>
-                    </div>
-                </a>
-            </div>
-            <nav role="navigation" aria-label="Main navigation">
-                <div class="nav-menu" id="navMenu">
-                    <button class="nav-close" id="navClose" aria-label="Close menu">
-                        <i class="fas fa-times"></i>
-                    </button>
-                    <ul>
-                        <li><a href="index.html" class="nav-link">Home</a></li>
-                        <li><a href="about.html" class="nav-link">About</a></li>
-                        <li><a href="college.html" class="nav-link">College</a></li>
-                        <li><a href="gallery.html" class="nav-link">Gallery</a></li>
-                        <li><a href="contact.html" class="nav-link">Contact</a></li>
-                        <li class="nav-cta-mobile"><a href="result-checker.html" class="btn btn-outline active">Check
-                                Result</a></li>
-                        <li class="nav-cta-mobile"><a href="admissions.html" class="btn btn-accent">Admissions</a></li>
-                    </ul>
-                </div>
-                <div class="nav-cta-buttons">
+     <!-- Navigation -->
+  <header class="navbar" role="banner">
+    <div class="container navbar-content">
+      <div class="logo-container">
+        <a href="Primary.html" class="logo">
+          <img src="images/collegeschoollogo.png" alt="jolad Model College Logo" class="logo-img">
+          <div class="logo-text">
+            <span>jolad Model College</span>
+            <span>Success Through The Fear Of God</span>
+          </div>
+        </a>
+        <div class="logo-divider"></div>
+        <a href="college.html" class="logo">
+          <img src="images/Primarychoollogo.png" alt="jolad Nursery & Primary Logo" class="logo-img">
+          <div class="logo-text">
+            <span>jolad Nursery & Primary</span>
+            <span>Christ Our Conerstone</span>
+          </div>
+        </a>
+      </div>
+      <nav role="navigation" aria-label="Main navigation">
+        <div class="nav-menu" id="navMenu">
+          <button class="nav-close" id="navClose" aria-label="Close menu">
+            <i class="fas fa-times"></i>
+          </button>
 
-                    <a href="admissions.html" class="btn btn-accent">Admissions</a>
-                </div>
-            </nav>
-            <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">
-                <span></span><span></span><span></span>
-            </button>
+          <ul>
+            <li><a href="index.html" class="nav-link active">Home</a></li>
+            <li><a href="about.html" class="nav-link">About</a></li>
+            <li><a href="Primary.html" class="nav-link">Nursery & Primary</a></li>
+            <li><a href="college.html" class="nav-link">College</a></li>
+            <li><a href="gallery.html" class="nav-link">Gallery</a></li>
+            <li><a href="contact.html" class="nav-link">Contact</a></li>
+            <!-- Result Checker Link Removed -->
+            <li class="nav-cta-mobile"><a href="admissions.html" class="btn btn-accent">Admissions</a></li>
+          </ul>
         </div>
-    </header>
+         <div class="nav-cta-buttons">
+
+          <a href="admissions.html" class="btn btn-accent">Admissions</a>
+        </div>
+      </nav>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
 
     <div class="nav-overlay" id="navOverlay"></div>
 
     <main>
-        <!-- Page Header -->
         <section class="page-header">
             <div class="container">
                 <h1>Result Checker</h1>
@@ -138,11 +116,9 @@
             </div>
         </section>
 
-        <!-- Result Section -->
         <section class="section">
             <div class="container">
                 <div class="result-card fade-in">
-
                     <!-- Login Step -->
                     <div id="loginStep">
                         <div class="step-header">
@@ -152,8 +128,7 @@
                         <form id="loginForm">
                             <div class="form-group">
                                 <label for="admissionNumber">Admission Number</label>
-                                <input type="text" id="admissionNumber" class="form-control"
-                                    placeholder="e.g. JTC/2024/001" required>
+                                <input type="text" id="admissionNumber" class="form-control" placeholder="e.g. JTC/2024/001" required>
                             </div>
                             <button type="submit" class="btn btn-Primary btn-lg btn-block">
                                 <i class="fas fa-search"></i> Check Result
@@ -165,17 +140,15 @@
                     <!-- Result Step -->
                     <div id="resultStep" style="display:none;">
                         <div class="step-header">
+                            <div class="success-icon"><i class="fas fa-check-circle"></i></div>
                             <h3 id="studentNameDisplay"></h3>
                             <p id="classDisplay"></p>
                         </div>
-                        <div id="resultContainer"></div>
-                        <div class="text-center mt-3">
-                            <button id="logoutBtn" class="btn btn-outline">
-                                <i class="fas fa-arrow-left"></i> Check Another Result
-                            </button>
-                        </div>
-                    </div>
 
+                        <button id="downloadBtn" class="btn btn-accent btn-lg btn-block" style="margin-top: 2rem;">
+                            <i class="fas fa-download"></i> Download Result
+                        </button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -187,8 +160,7 @@
             <div class="footer-grid">
                 <div class="footer-about">
                     <div class="logo">
-                        <div class="logo-text"><span>jolad Group of Schools</span><span>Christ Our Cornerstone</span>
-                        </div>
+                        <div class="logo-text"><span>jolad Group of Schools</span><span>Christ Our Cornerstone</span></div>
                     </div>
                     <p>Providing quality education from nursery to college since 1995.</p>
                 </div>
@@ -216,8 +188,10 @@
 
     <script src="script.js"></script>
     <script>
-        // IMPORTANT: Change this to your live Render URL
         const API_URL = 'https://joladschool.onrender.com/api';
+        let currentResultFile = '';
+        let currentStudentName = '';
+        let currentFileType = '';
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -234,21 +208,14 @@
                 const data = await res.json();
 
                 if (data.success) {
+                    currentResultFile = data.student.resultFile;
+                    currentStudentName = data.student.studentName;
+                    currentFileType = data.student.fileType;
+
                     document.getElementById('loginStep').style.display = 'none';
                     document.getElementById('resultStep').style.display = 'block';
-                    document.getElementById('studentNameDisplay').textContent = `Result for: ${data.student.studentName}`;
+                    document.getElementById('studentNameDisplay').textContent = `Result for: ${currentStudentName}`;
                     document.getElementById('classDisplay').textContent = `Class: ${data.student.studentClass}`;
-
-                    // The file is now a Base64 string inside data.student.resultFile
-                    const fileSource = data.student.resultFile;
-
-                    if (data.student.fileType === 'pdf') {
-                        // For PDFs, we embed the base64 data directly
-                        document.getElementById('resultContainer').innerHTML = `<iframe src="${fileSource}" class="result-viewer"></iframe>`;
-                    } else {
-                        // For Images
-                        document.getElementById('resultContainer').innerHTML = `<img src="${fileSource}" class="result-image" alt="Result">`;
-                    }
                 } else {
                     errorDiv.textContent = data.message;
                 }
@@ -257,10 +224,16 @@
             }
         });
 
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            document.getElementById('loginStep').style.display = 'block';
-            document.getElementById('resultStep').style.display = 'none';
-            document.getElementById('admissionNumber').value = '';
+        // Download Logic
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            const downloadLink = document.createElement('a');
+            downloadLink.href = currentResultFile;
+            const cleanName = currentStudentName.replace(/\s+/g, '_').toUpperCase();
+            const extension = currentFileType === 'pdf' ? 'pdf' : 'jpg';
+            downloadLink.download = `${cleanName}_Result.${extension}`;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
         });
     </script>
 </body>

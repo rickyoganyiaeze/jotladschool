@@ -572,3 +572,24 @@ nav[role="navigation"] {
 .bg-light { background: var(--off-white); }
 .mt-2 { margin-top: 2rem; }
 .mb-2 { margin-bottom: 2rem; }
+
+    .password-wrapper {
+      position: relative;
+    }
+    .password-wrapper input {
+      padding-right: 3rem; /* Make room for the eye icon */
+    }
+    .toggle-password {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #6c757d;
+      font-size: 1rem;
+    }
+    .toggle-password:hover {
+      color: #0056b3;
+    }
