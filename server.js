@@ -143,7 +143,22 @@ app.delete('/api/admin/results/:id', adminAuth, async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 });
-
+// Update Result (Admin) - NEW
+app.put('/api/admin/results/:id', adminAuth, async (req, res) => {
+  try {
+    const updatedResult = await Result.findByIdAndUpdate(
+      req.params.id, 
+      { 
+        studentName: req.body.studentName, 
+        studentClass: req.body.studentClass 
+      },
+      { new: true }
+    );
+    res.json({ success: true, data: updatedResult });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
 // Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
