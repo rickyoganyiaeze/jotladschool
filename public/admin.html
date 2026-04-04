@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard | Jotlad</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .admin-container { display: flex; min-height: 100vh; }
+    .sidebar { width: 250px; background: #003d80; color: white; padding: 2rem; }
+    .main-content { flex: 1; padding: 2rem; background: #f4f7f6; }
+    .card { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 1.5rem; }
+    .upload-form { display: grid; gap: 1rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <div class="sidebar">
+      <h2>Jotlad Admin</h2>
+      <ul style="list-style:none; padding:0;">
+        <li style="margin-bottom:1rem;"><a href="#" style="color:white; text-decoration:none;">Dashboard</a></li>
+        <li><a href="/" style="color:white; opacity:0.7; text-decoration:none;">View Website</a></li>
+      </ul>
+    </div>
+
+    <div class="main-content">
+      <div class="card">
+        <h3>Upload New Result</h3>
+        <form id="uploadForm" class="upload-form" enctype="multipart/form-data">
+          <input type="text" id="admNo" placeholder="Admission Number" class="form-control" required>
+          <input type="text" id="sName" placeholder="Student Full Name" class="form-control" required>
+          <input type="text" id="sClass" placeholder="Class (e.g. JSS 1)" class="form-control" required>
+          <div class="form-row">
+            <input type="datetime-local" id="startTime" class="form-control">
+            <input type="datetime-local" id="endTime" class="form-control">
+          </div>
+          <input type="file" id="resultFile" accept="image/*,.pdf" class="form-control" required>
+          <button type="submit" class="btn btn-accent">Upload Result</button>
+        </form>
+        <p id="uploadMsg" style="color:green; margin-top:1rem;"></p>
+      </div>
+
+      <div class="card">
+        <h3>All Uploaded Results</h3>
+        <table>
+          <thead><tr><th>Name</th><th>Adm No</th><th>Class</th><th>Action</th></tr></thead>
+          <tbody id="resultsTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:5000/api';
+    const ADMIN_KEY = 'your_secret_admin_password_here'; // Must match .env
+
+    // Load Results
+    async function loadResults() {
+      const res = await fetch(`${API_URL}/admin/results?key=${ADMIN_KEY}`);
+      const data = await res.json();
+      const tbody = document.getElementById('resultsTable');
+      tbody.innerHTML = data.results.map(r => `
+        <tr>
+          <td>${r.studentName}</td>
+          <td>${r.admissionNumber}</td>
+          <td>${r.studentClass}</td>
+          <td><button onclick="deleteResult('${r._id}')" class="btn btn-outline btn-sm" style="color:red; border-color:red;">Delete</button></td>
+        </tr>
+      `).join('');
+    }
+
+    // Upload Result
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData();
+      formData.append('admissionNumber', document.getElementById('admNo').value);
+      formData.append('studentName', document.getElementById('sName').value);
+      formData.append('studentClass', document.getElementById('sClass').value);
+      formData.append('start', document.getElementById('startTime').value);
+      formData.append('end', document.getElementById('endTime').value);
+      formData.append('resultFile', document.getElementById('resultFile').files[0]);
+
+      const res = await fetch(`${API_URL}/admin/upload?key=${ADMIN_KEY}`, {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      document.getElementById('uploadMsg').textContent = data.message;
+      loadResults();
+    });
+
+    // Delete Result
+    async function deleteResult(id) {
+      if(confirm('Are you sure?')) {
+        await fetch(`${API_URL}/admin/results/${id}?key=${ADMIN_KEY}`, { method: 'DELETE' });
+        loadResults();
+      }
+    }
+
+    loadResults();
+  </script>
+</body>
+</html>
