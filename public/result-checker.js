@@ -1,5 +1,5 @@
 // Result Checker Frontend Logic
-const API_URL = '';
+const API_URL = '/api';
 
 // State
 let admissionNumber = '';
