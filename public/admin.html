@@ -2,392 +2,235 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard | Jotlad Schools</title>
-  <base href="/">
-  <link rel="icon" type="image/png" href="images/favicon.jpeg">
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="styles.css">
-  <style>
-    body { margin: 0; font-family: 'Nunito', sans-serif; background: #f4f7f6; }
-    
-    /* Layout */
-    .admin-wrapper { display: flex; min-height: 100vh; }
-    
-    /* Sidebar - Fixed to always show */
-    .sidebar {
-      width: 260px;
-      background: linear-gradient(180deg, var(--Primary-blue-dark) 0%, var(--Primary-blue) 100%);
-      color: white;
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-      box-shadow: 4px 0 10px rgba(0,0,0,0.1);
-      min-height: 100vh; /* Ensure it stays tall */
-      position: sticky; /* Stay visible on scroll */
-      top: 0;
-    }
-    .sidebar-header {
-      padding: 2rem;
-      text-align: center;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-    .sidebar-header img { width: 60px; border-radius: 50%; margin-bottom: 0.5rem; border: 2px solid var(--accent-orange); }
-    .sidebar-header h2 { margin: 0; font-size: 1.1rem; font-family: 'Poppins', sans-serif; }
-    .sidebar-header p { margin: 0; font-size: 0.8rem; opacity: 0.8; }
-    
-    .nav-menu { padding: 1rem 0; flex-grow: 1; }
-    .nav-item {
-      display: flex;
-      align-items: center;
-      padding: 1rem 2rem;
-      color: rgba(255,255,255,0.8);
-      text-decoration: none;
-      transition: 0.3s;
-      border-left: 4px solid transparent;
-    }
-    .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
-    .nav-item.active { 
-      background: rgba(255,255,255,0.1); 
-      color: white; 
-      border-left-color: var(--accent-orange);
-    }
-    .nav-item i { width: 25px; margin-right: 10px; }
-    
-    .sidebar-footer { padding: 1.5rem 2rem; border-top: 1px solid rgba(255,255,255,0.1); }
-    .btn-logout {
-      display: block;
-      width: 100%;
-      padding: 0.8rem;
-      background: rgba(255,255,255,0.1);
-      color: white;
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 8px;
-      text-align: center;
-      text-decoration: none;
-      font-weight: 600;
-      transition: 0.3s;
-    }
-    .btn-logout:hover { background: #dc3545; border-color: #dc3545; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | jolad Schools</title>
+    <base href="/">
+    <link rel="icon" type="image/png" href="images/favicon.jpeg">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Poppins:wght@500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
 
-    /* Main Content */
-    .main-content { flex: 1; padding: 2rem; overflow-y: auto; background: #f4f7f6; }
-    .page-header { margin-bottom: 2rem; }
-    .page-header h1 { color: var(--Primary-blue); margin: 0; }
-    
-    /* Cards & Sections */
-    .dashboard-section { display: none; animation: fadeIn 0.5s; }
-    .dashboard-section.active { display: block; }
-    
-    .card {
-      background: white;
-      border-radius: var(--border-radius-lg);
-      box-shadow: var(--shadow-sm);
-      padding: 2rem;
-      margin-bottom: 1.5rem;
-    }
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-      padding-bottom: 1rem;
-      border-bottom: 2px solid var(--off-white);
-    }
-    .card-header h3 { margin: 0; color: var(--text-dark); font-size: 1.25rem; }
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(135deg, var(--Primary-blue) 0%, var(--Primary-blue-dark) 100%);
+            color: white;
+            padding: 2rem;
+            flex-shrink: 0;
+        }
 
-    /* Table Styling */
-    .table-container { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; min-width: 600px; }
-    th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--light-gray); }
-    th { background: var(--off-white); font-weight: 700; color: var(--Primary-blue); font-size: 0.85rem; text-transform: uppercase; }
-    tr:hover { background: #f8f9fa; }
-    .badge {
-      display: inline-block;
-      padding: 0.25rem 0.75rem;
-      border-radius: 50px;
-      font-size: 0.75rem;
-      font-weight: 700;
-    }
-    .badge-success { background: #d1e7dd; color: #0f5132; }
-    
-    /* Action Buttons */
-    .action-btn {
-      padding: 0.5rem 0.75rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      margin-right: 0.25rem;
-      transition: 0.2s;
-    }
-    .btn-edit { background: #e0f2fe; color: #0284c7; }
-    .btn-edit:hover { background: #0284c7; color: white; }
-    .btn-delete { background: #fee2e2; color: #dc2626; }
-    .btn-delete:hover { background: #dc2626; color: white; }
+        .sidebar h2 {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgb(255, 255, 255);
+            padding-bottom: 1rem;
+        }
 
-    /* Modal */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      padding: 1rem;
-    }
-    .modal-overlay.active { display: flex; }
-    .modal-box {
-      background: white;
-      width: 100%;
-      max-width: 500px;
-      border-radius: var(--border-radius-lg);
-      padding: 2rem;
-      position: relative;
-    }
-    .modal-close {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: #6c757d;
-    }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
 
-    /* Responsive - Simple Scroll for mobile */
-    @media (max-width: 768px) {
-      .admin-wrapper { flex-direction: column; }
-      .sidebar {
-        width: 100%;
-        min-height: auto;
-        position: relative;
-      }
-      .nav-menu { display: flex; flex-wrap: wrap; justify-content: center; }
-      .nav-item { padding: 0.75rem 1.5rem; border-bottom: 3px solid transparent; border-left: none; }
-      .nav-item.active { border-bottom-color: var(--accent-orange); }
-      .sidebar-footer { display: none; }
-    }
-  </style>
+        .sidebar li {
+            margin-bottom: 1rem;
+        }
+
+        .sidebar a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-weight: 600;
+            display: block;
+            padding: 0.75rem;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .main-content {
+            flex: 1;
+            background: var(--off-white);
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .page-title {
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+        }
+
+        .card h3 {
+            margin-bottom: 1.5rem;
+            color: var(--Primary-blue);
+            border-bottom: 2px solid var(--off-white);
+            padding-bottom: 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        th {
+            background: var(--off-white);
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 1rem;
+            }
+
+            .sidebar ul {
+                display: flex;
+                overflow-x: auto;
+                gap: 0.5rem;
+            }
+
+            .sidebar li {
+                margin-bottom: 0;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-  <div class="admin-wrapper">
-    
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <img src="images/Primarychoollogo.png" alt="Admin">
-        <h2>Admin Panel</h2>
-        <p>Jotlad Schools</p>
-      </div>
-      
-      <nav class="nav-menu">
-        <a href="#" class="nav-item active" onclick="showSection('uploadSection')">
-          <i class="fas fa-upload"></i> Upload Result
-        </a>
-        <a href="#" class="nav-item" onclick="showSection('resultsSection')">
-          <i class="fas fa-folder-open"></i> All Results
-        </a>
-        <a href="index.html" class="nav-item">
-          <i class="fas fa-globe"></i> View Website
-        </a>
-      </nav>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2 style="color: white;">jolad Admin</h2>
 
-      <div class="sidebar-footer">
-        <a href="login.html" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-      </div>
-    </aside>
+            <ul>
+                <li><a href="index.html"><i class="fas fa-globe"></i> View Website</a></li>
+                <li><a href="#" class="active"><i class="fas fa-upload"></i> Upload Result</a></li>
+                <li><a href="#" onclick="alert('Logout functionality not needed for single admin key.')"><i
+                            class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </aside>
 
-    <!-- Main Content -->
-    <main class="main-content">
-      
-      <div class="page-header">
-        <h1 id="pageTitle">Upload Result</h1>
-        <p id="pageDesc">Fill in the details below to upload a new student result.</p>
-      </div>
+        <!-- Main Content -->
+        <main class="main-content">
 
-      <!-- Upload Section -->
-      <div id="uploadSection" class="dashboard-section active">
-        <div class="card">
-          <form id="uploadForm" enctype="multipart/form-data">
-            <div class="form-row">
-              <div class="form-group">
-                <label>Admission Number</label>
-                <input type="text" id="admNo" class="form-control" placeholder="e.g. JTC/2024/001" required>
-              </div>
-              <div class="form-group">
-                <label>Student Name</label>
-                <input type="text" id="sName" class="form-control" placeholder="Full Name" required>
-              </div>
+            <div class="page-title">
+                <h1 style="color: #ff6600;">Dashboard</h1>
+                <p>Manage student results and uploads.</p>
             </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Class</label>
-                <input type="text" id="sClass" class="form-control" placeholder="e.g. JSS 1" required>
-              </div>
-              <div class="form-group">
-                <label>Result File (PDF/Image)</label>
-                <input type="file" id="resultFile" class="form-control" accept="image/*,.pdf" required>
-              </div>
+
+            <!-- Upload Form Card -->
+            <div class="card">
+                <h3><i class="fas fa-plus-circle"></i> Upload New Result</h3>
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Admission Number</label>
+                            <input type="text" id="admNo" class="form-control" placeholder="e.g. JTC/2024/001" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Student Name</label>
+                            <input type="text" id="sName" class="form-control" placeholder="Full Name" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Class</label>
+                            <input type="text" id="sClass" class="form-control" placeholder="e.g. JSS 1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Result File (PDF/Image)</label>
+                            <input type="file" id="resultFile" class="form-control" accept="image/*,.pdf" required>
+                        </div>
+                    </div>
+
+                    <div style="background: var(--off-white); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Availability (Optional):</strong>
+                            Leave blank for always available.</p>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Start Date</label>
+                                <input type="datetime-local" id="startTime" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>End Date</label>
+                                <input type="datetime-local" id="endTime" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-accent btn-lg">
+                        <i class="fas fa-upload"></i> Upload Result
+                    </button>
+                    <p id="uploadMsg" style="margin-top:1rem; color:green;"></p>
+                </form>
             </div>
-            
-            <div style="background: var(--off-white); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-              <p style="font-size: 0.9rem; margin-bottom: 0.5rem; color:var(--text-dark);"><strong>Availability (Optional):</strong></p>
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Start Date</label>
-                  <input type="datetime-local" id="startTime" class="form-control">
+
+            <!-- Results List Card -->
+            <div class="card">
+                <h3><i class="fas fa-list"></i> All Uploaded Results</h3>
+                <div style="overflow-x: auto;">
+                    <table id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Adm No</th>
+                                <th>Class</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Results will load here -->
+                        </tbody>
+                    </table>
                 </div>
-                <div class="form-group">
-                  <label>End Date</label>
-                  <input type="datetime-local" id="endTime" class="form-control">
-                </div>
-              </div>
             </div>
 
-            <button type="submit" class="btn btn-accent btn-lg">
-              <i class="fas fa-cloud-upload-alt"></i> Upload Result
-            </button>
-            <p id="uploadMsg" style="margin-top:1rem; font-weight:600;"></p>
-          </form>
-        </div>
-      </div>
-
-      <!-- All Results Section -->
-      <div id="resultsSection" class="dashboard-section">
-        <div class="card">
-          <div class="card-header">
-            <h3><i class="fas fa-history"></i> Saved Results</h3>
-          </div>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Student Name</th>
-                  <th>Adm No</th>
-                  <th>Class</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="resultsTableBody">
-                <!-- Data loads here -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-    </main>
-  </div>
-
-  <!-- Edit Modal -->
-  <div class="modal-overlay" id="editModal">
-    <div class="modal-box">
-      <button class="modal-close" onclick="closeModal()">&times;</button>
-      <h3 style="margin-bottom: 1.5rem; color: var(--Primary-blue);">Edit Result Details</h3>
-      <form id="editForm">
-        <input type="hidden" id="editId">
-        <div class="form-group">
-          <label>Admission Number</label>
-          <input type="text" id="editAdmNo" class="form-control" required>
-        </div>
-        <div class="form-group">
-          <label>Student Name</label>
-          <input type="text" id="editName" class="form-control" required>
-        </div>
-        <div class="form-group">
-          <label>Class</label>
-          <input type="text" id="editClass" class="form-control" required>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Start Date</label>
-            <input type="datetime-local" id="editStart" class="form-control">
-          </div>
-          <div class="form-group">
-            <label>End Date</label>
-            <input type="datetime-local" id="editEnd" class="form-control">
-          </div>
-        </div>
-        <button type="submit" class="btn btn-Primary btn-block">Save Changes</button>
-      </form>
+        </main>
     </div>
-  </div>
 
-  <script>
-    // --- SECURITY LOCK ---
-    if (sessionStorage.getItem('adminAuthorized') !== 'true') {
-      window.location.href = "login.html";
-    }
-
-    const API_URL = 'https://joladschool.onrender.com/api';
-    const ADMIN_KEY = 'mySecretAdminKey123'; 
-
-    // --- NAVIGATION ---
-    function showSection(sectionId) {
-      // Hide all sections
-      document.querySelectorAll('.dashboard-section').forEach(s => s.classList.remove('active'));
-      // Remove active from nav
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      
-      // Show selected section
-      document.getElementById(sectionId).classList.add('active');
-      
-      // Update Header
-      if(sectionId === 'uploadSection') {
-        document.getElementById('pageTitle').textContent = "Upload Result";
-        document.getElementById('pageDesc').textContent = "Fill in the details below to upload a new student result.";
-        document.querySelector('.nav-item:nth-child(1)').classList.add('active');
-      } else {
-        document.getElementById('pageTitle').textContent = "All Results";
-        document.getElementById('pageDesc').textContent = "View, edit, or delete uploaded student results.";
-        document.querySelector('.nav-item:nth-child(2)').classList.add('active');
-        loadResults(); // Refresh list when viewing
-      }
-    }
-
-    // --- UPLOAD LOGIC ---
-    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const msg = document.getElementById('uploadMsg');
-      msg.textContent = "Uploading...";
-      msg.style.color = "var(--Primary-blue)";
-
-      const formData = new FormData();
-      formData.append('admissionNumber', document.getElementById('admNo').value);
-      formData.append('studentName', document.getElementById('sName').value);
-      formData.append('studentClass', document.getElementById('sClass').value);
-      formData.append('start', document.getElementById('startTime').value);
-      formData.append('end', document.getElementById('endTime').value);
-      formData.append('resultFile', document.getElementById('resultFile').files[0]);
-
-      try {
-        const res = await fetch(`${API_URL}/admin/upload?key=${ADMIN_KEY}`, {
-          method: 'POST',
-          body: formData
-        });
-        const data = await res.json();
-        
-        if (data.success) {
-          msg.textContent = "✅ Result Uploaded Successfully!";
-          msg.style.color = "green";
-          e.target.reset();
-        } else {
-          msg.textContent = data.message;
-          msg.style.color = "red";
+    <script>
+        // SECURITY LOCK - Put this first!
+        if (sessionStorage.getItem('adminAuthorized') !== 'true') {
+            window.location.href = "login.html"; // Kick them out if not logged in
         }
-      } catch (err) {
-        msg.textContent = "Connection error.";
-        msg.style.color = "red";
-      }
-    });
+        // IMPORTANT: Change this to your live Render URL
+        const API_URL = 'https://joladschool.onrender.com/api';
+        const ADMIN_KEY = 'mySecretAdminKey123'; // Must match your .env variable
 
     // --- RESULTS TABLE LOGIC ---
     async function loadResults() {
@@ -395,6 +238,7 @@
       tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">Loading...</td></tr>';
 
       try {
+        // This now returns results without the heavy file data
         const res = await fetch(`${API_URL}/admin/results?key=${ADMIN_KEY}`);
         const data = await res.json();
 
@@ -405,10 +249,8 @@
 
         tbody.innerHTML = '';
         data.results.forEach(r => {
-          // Format Date
           const date = new Date(r.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
           
-          // Check Status
           const now = new Date();
           let status = '<span class="badge badge-success">Available</span>';
           if (r.availabilityStart && r.availabilityEnd) {
@@ -439,67 +281,48 @@
       }
     }
 
-    // --- EDIT LOGIC ---
-    function openEditModal(id, adm, name, cls, start, end) {
-      document.getElementById('editId').value = id;
-      document.getElementById('editAdmNo').value = adm;
-      document.getElementById('editName').value = name;
-      document.getElementById('editClass').value = cls;
-      
-      // Handle dates for input type datetime-local
-      if(start) document.getElementById('editStart').value = start.substring(0, 16);
-      if(end) document.getElementById('editEnd').value = end.substring(0, 16);
+        // Upload Result
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('admissionNumber', document.getElementById('admNo').value);
+            formData.append('studentName', document.getElementById('sName').value);
+            formData.append('studentClass', document.getElementById('sClass').value);
+            formData.append('start', document.getElementById('startTime').value);
+            formData.append('end', document.getElementById('endTime').value);
+            formData.append('resultFile', document.getElementById('resultFile').files[0]);
 
-      document.getElementById('editModal').classList.add('active');
-    }
-
-    function closeModal() {
-      document.getElementById('editModal').classList.remove('active');
-    }
-
-    document.getElementById('editForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const id = document.getElementById('editId').value;
-      
-      const updatedData = {
-        admissionNumber: document.getElementById('editAdmNo').value,
-        studentName: document.getElementById('editName').value,
-        studentClass: document.getElementById('editClass').value,
-        start: document.getElementById('editStart').value,
-        end: document.getElementById('editEnd').value
-      };
-
-      try {
-        const res = await fetch(`${API_URL}/admin/results/${id}?key=${ADMIN_KEY}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updatedData)
+            try {
+                const res = await fetch(`${API_URL}/admin/upload?key=${ADMIN_KEY}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                document.getElementById('uploadMsg').textContent = data.message || 'Success!';
+                document.getElementById('uploadForm').reset();
+                loadResults();
+            } catch (err) {
+                document.getElementById('uploadMsg').textContent = 'Error uploading.';
+                document.getElementById('uploadMsg').style.color = 'red';
+            }
         });
-        const data = await res.json();
-        
-        if (data.success) {
-          closeModal();
-          loadResults();
-        } else {
-          alert("Update failed: " + data.message);
+
+        // Delete Result
+        async function deleteResult(id) {
+            if (confirm('Are you sure you want to delete this result?')) {
+                try {
+                    await fetch(`${API_URL}/admin/results/${id}?key=${ADMIN_KEY}`, { method: 'DELETE' });
+                    loadResults();
+                } catch (err) {
+                    alert('Error deleting.');
+                }
+            }
         }
-      } catch (err) {
-        alert("Connection error");
-      }
-    });
 
-    // --- DELETE LOGIC ---
-    async function deleteResult(id) {
-      if(confirm('Are you sure you want to delete this result?')) {
-        const res = await fetch(`${API_URL}/admin/results/${id}?key=${ADMIN_KEY}`, { method: 'DELETE' });
-        const data = await res.json();
-        if (data.success) loadResults();
-      }
-    }
+        // Initialize
+        loadResults();
 
-    // Initial load
-    loadResults();
-
-  </script>
+    </script>
 </body>
+
 </html>
