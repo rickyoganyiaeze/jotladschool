@@ -3,7 +3,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const cors = require('cors');
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 // --- APP SETUP ---
@@ -14,7 +13,7 @@ app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 
 // --- DB CONNECTION ---
 // TEMPORARY HARDCODE - REMOVE LATER FOR SECURITY
-const MONGO_URI = "mongodb+srv://joladschool_admin:Jotlad2024Secure@joladschool.uludk18.mongodb.net/?appName=joladschool";
+const MONGO_URI = "mongodb+srv://joladschool_add:Jotlad2024Secure@joladschool.uludk18.mongodb.net/?appName=joladschool&retryWrites=true&w=majority";
 if (!MONGO_URI) {
     console.error("ERROR: MONGO_URI is missing!");
 }
@@ -61,7 +60,7 @@ app.get('/setup-admin', async (req, res) => {
       return res.json({ message: 'Admin already exists. Username: admin, Password: password123' });
     }
     
-    const hash = await bcrypt.hash('password123', 10);
+    const hash = 'password123'; // Plain text for now
     const admin = new Admin({ username: 'admin', password: hash });
     await admin.save();
     
@@ -87,7 +86,7 @@ app.post('/get-result', async (req, res) => {
   } catch(e) { res.status(500).json({success:false}); }
 });
 
-// Admin Login
+// Admin Login (Simple Version)
 app.post('/admin/login', async (req, res) => {
   try {
     if(!req.body.username || !req.body.password) return res.status(400).send('Missing credentials');
@@ -96,8 +95,10 @@ app.post('/admin/login', async (req, res) => {
     
     if (!a) return res.status(400).json({ message: 'User not found' });
     
-    const valid = await bcrypt.compare(req.body.password, a.password);
-    if (!valid) return res.status(400).json({ message: 'Invalid Password' });
+    // Simple password check (for debugging)
+    if (a.password !== req.body.password) { 
+        return res.status(400).json({ message: 'Invalid Password' }); 
+    }
 
     const token = jwt.sign({ id: a._id }, JWT_SECRET, { expiresIn: '24h' });
     res.json({ success: true, token, username: a.username });
