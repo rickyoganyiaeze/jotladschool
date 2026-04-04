@@ -1,4 +1,4 @@
-// Admin Dashboard Logic
+// admin Dashboard Logic
 const API_URL = '/api';
 
 // Check authentication
@@ -10,7 +10,7 @@ if (!token) {
 }
 
 // Display username
-document.getElementById('adminUsername').textContent = username || 'Admin';
+document.getElementById('adminUsername').textContent = username || 'admin';
 
 // Logout
 document.getElementById('logoutBtn').addEventListener('click', () => {

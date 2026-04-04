@@ -26,7 +26,7 @@ const Result = mongoose.model('Result', new mongoose.Schema({
   admissionNumber: String, studentName: String, class: String,
   term: String, year: String, pdfData: String, createdAt: { type: Date, default: Date.now }
 }));
-const Admin = mongoose.model('Admin', new mongoose.Schema({
+const admin = mongoose.model('admin', new mongoose.Schema({
   username: { type: String, unique: true }, password: String
 }));
 const JWT_SECRET = 'jotlad-secret-2024';
@@ -44,9 +44,9 @@ const up = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 10
 app.get('/hello', (req, res) => res.json({ m: 'Active' }));
 
 app.get('/setup-admin', async (req, res) => {
-  const ex = await Admin.findOne({ username: 'admin' });
+  const ex = await admin.findOne({ username: 'admin' });
   if (ex) return res.json({m:'Exists'});
-  await new Admin({ username: 'admin', password: 'password123' }).save();
+  await new admin({ username: 'admin', password: 'password123' }).save();
   res.json({m:'Created'});
 });
 
@@ -66,7 +66,7 @@ app.post('/get-result', async (req, res) => {
 
 app.post('/admin/login', async (req, res) => {
   try {
-    const u = await Admin.findOne({ username: req.body.username });
+    const u = await admin.findOne({ username: req.body.username });
     if (!u) return res.status(404).json({ m: 'User not found' });
     if (u.password !== req.body.password) return res.status(401).json({ m: 'Invalid creds' });
     const t = jwt.sign({ id: u._id }, JWT_SECRET, { expiresIn: '24h' });

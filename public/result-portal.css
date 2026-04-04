@@ -271,7 +271,7 @@
   margin: 0;
 }
 
-/* ============ ADMIN STYLES ============ */
+/* ============ admin STYLES ============ */
 
 .admin-body {
   background: linear-gradient(135deg, var(--result-primary) 0%, var(--result-primary-dark) 100%);
@@ -343,7 +343,7 @@
   font-size: 0.9rem;
 }
 
-/* Admin Dashboard */
+/* admin Dashboard */
 .admin-dashboard-body {
   background: var(--result-light);
 }
@@ -398,7 +398,7 @@
   color: var(--result-gray);
 }
 
-/* Admin Container */
+/* admin Container */
 .admin-container {
   display: flex;
   max-width: 1400px;
@@ -445,7 +445,7 @@
   text-align: center;
 }
 
-/* Admin Main */
+/* admin Main */
 .admin-main {
   flex: 1;
   padding: 2rem;
